@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html onclick="new_random_hero()">
+    <body>
+        <p id="output"
+           style='-webkit-user-select: none; -o-user-select: none; -moz-user-select: none; font-size: 60pt; text-align: center;'
+        > Click to random! </p>
+        <script>
+            function random_hero() {
+                var heroes = [
+                    "Queen of Pain", "Anti-Mage", "Kunkka", "Lina", "Mirana",
+                    "Slardar", "Lion", "Phantom Assassin", "Tidehunter", "Witch Doctor",
+                    "Vengeful Spirit", "Juggernaut", "Earthshaker",
+                    "Pudge", "Bane", "Crystal Maiden", "Sven", "Wraith King",
+                    "Storm Spirit", "Sand King", "Shadow Fiend", "Drow Ranger",
+                    "Axe", "Bloodseeker", "Phantom Lancer", "Razor",
+                    "Morphling", "Zeus", "Tiny", "Puck", "Windranger", "Lich",
+                    "Shadow Shaman", "Riki", "Enigma", "Tinker", "Sniper",
+                    "Necrophos", "Warlock", "Beastmaster", "Venomancer",
+                    "Faceless Void", "Death Prophet", "Pugna", "Templar Assassin",
+                    "Viper", "Luna", "Dragon Knight", "Dazzle",
+                    "Clockwerk", "Leshrac", "Nature's Prophet", "Lifestealer",
+                    "Dark Seer", "Clinkz", "Omniknight", "Enchantress",
+                    "Huskar", "Night Stalker", "Broodmother", "Bounty Hunter",
+                    "Weaver", "Jakiro", "Batrider", "Chen", "Spectre", "Doom",
+                    "Ancient Apparition", "Ursa", "Spirit Breaker",
+                    "Gyrocopter", "Alchemist", "Invoker", "Silencer",
+                    "Outworld Devourer", "Lycan", "Brewmaster", "Shadow Demon",
+                    "Lone Druid", "Chaos Knight", "Treant Protector", "Meepo",
+                    "Ogre Magi", "Undying", "Rubick", "Disruptor",
+                    "Nyx Assassin", "Naga Siren", "Keeper of the Light", "Visage",
+                    "Io", "Slark", "Medusa", "Troll Warlord", "Centaur Warrunner",
+                    "Magnus", "Timbersaw", "Bristleback", "Tusk",
+                    "Skywrath Mage", "Abaddon", "Elder Titan", "Legion Commander",
+                    "Ember Spirit", "Earth Spirit", "Underlord", "Phoenix",
+                    "Terrorblade", "Oracle", "Techies", "Winter Wyvern",
+                    "Arc Warden", "Monkey King", "Pangolier", "Dark Willow",
+                ];
+                return heroes[ Math.floor( 1000 * Math.random() ) % heroes.length ];
+            }
+
+            function new_random_hero() {
+                var div = document.getElementById("output").innerHTML = random_hero();
+            }
+        </script>
+    </body>
+</html>
+
