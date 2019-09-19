@@ -1,60 +1,60 @@
 <!DOCTYPE html>
 
 <style>
- body { background-color: #1f2f22; }
- p {
-     color: white;
-     -webkit-user-select: none;
-     -o-user-select: none;
-     -moz-user-select: none;
-     font-size: 60pt;
-     text-align: center;
- }
+    body {
+        background-color: #1f2f22;
+    }
+
+    p {
+        color: white;
+        -webkit-user-select: none;
+        -o-user-select: none;
+        -moz-user-select: none;
+        font-size: 60pt;
+        text-align: center;
+    }
 </style>
 
 <html onclick="new_random_hero()">
-    <body>
-        <p id="output"> Click to random! </p>
-        <script>
-         function random_hero()
-         {
-             var heroes = [
-                 "Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage",
-                 "Arc Warden", "Axe", "Bane", "Batrider", "Beastmaster",
-                 "Bloodseeker", "Bounty Hunter", "Brewmaster", "Bristleback",
-                 "Broodmother", "Centaur Warrunner", "Chaos Knight", "Chen",
-                 "Clinkz", "Clockwerk", "Crystal Maiden", "Dark Seer",
-                 "Dark Willow", "Dazzle", "Death Prophet", "Disruptor", "Doom",
-                 "Dragon Knight", "Drow Ranger", "Earth Spirit", "Earthshaker",
-                 "Elder Titan", "Ember Spirit", "Enchantress", "Enigma",
-                 "Faceless Void", "Gyrocopter", "Huskar", "Invoker", "Io",
-                 "Jakiro", "Juggernaut", "Keeper of the Light", "Kunkka",
-                 "Legion Commander", "Leshrac", "Lich", "Lifestealer", "Lina",
-                 "Lion", "Lone Druid", "Luna", "Lycan", "Magnus", "Medusa",
-                 "Meepo", "Mirana", "Monkey King", "Morphling", "Naga Siren",
-                 "Nature's Prophet", "Necrophos", "Night Stalker",
-                 "Nyx Assassin", "Ogre Magi", "Omniknight", "Oracle",
-                 "Outworld Devourer", "Pangolier", "Phantom Assassin",
-                 "Phantom Lancer", "Phoenix", "Puck", "Pudge", "Pugna",
-                 "Queen of Pain", "Razor", "Riki", "Rubick", "Sand King",
-                 "Shadow Demon", "Shadow Fiend", "Shadow Shaman", "Silencer",
-                 "Skywrath Mage", "Slardar", "Slark", "Sniper", "Spectre",
-                 "Spirit Breaker", "Storm Spirit", "Sven", "Techies",
-                 "Templar Assassin", "Terrorblade", "Tidehunter", "Timbersaw",
-                 "Tinker", "Tiny", "Treant Protector", "Troll Warlord", "Tusk",
-                 "Underlord", "Undying", "Ursa", "Vengeful Spirit",
-                 "Venomancer", "Viper", "Visage", "Warlock", "Weaver",
-                 "Windranger", "Winter Wyvern", "Witch Doctor", "Wraith King",
-                 "Zeus",
-             ];
 
-             return heroes[ Math.floor(1000 * Math.random()) % heroes.length ];
-         }
+<body>
+    <p id="output"> Click to random! </p>
+    <script>
+        function random_hero() {
+            var heroes = [
+                "Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage", "Arc Warden", "Axe",
+                "Bane", "Batrider", "Beastmaster", "Bloodseeker", "Bounty Hunter", "Brewmaster", "Bristleback", "Broodmother",
+                "Centaur Warrunner", "Chaos Knight", "Chen", "Clinkz", "Clockwerk", "Crystal Maiden",
+                "Dark Seer", "Dark Willow", "Dazzle", "Death Prophet", "Disruptor", "Doom", "Dragon Knight", "Drow Ranger",
+                "Earth Spirit", "Earthshaker", "Elder Titan", "Ember Spirit", "Enchantress", "Enigma",
+                "Faceless Void",
+                "Grimstroke", "Gyrocopter",
+                "Huskar",
+                "Invoker", "Io",
+                "Jakiro", "Juggernaut",
+                "Keeper of the Light", "Kunkka",
+                "Legion Commander", "Leshrac", "Lich", "Lifestealer", "Lina", "Lion", "Lone Druid", "Luna", "Lycan",
+                "Magnus", "Mars", "Medusa", "Meepo", "Mirana", "Monkey King", "Morphling",
+                "Naga Siren", "Nature's Prophet", "Necrophos", "Night Stalker", "Nyx Assassin",
+                "Ogre Magi", "Omniknight", "Oracle", "Outworld Devourer",
+                "Pangolier", "Phantom Assassin", "Phantom Lancer", "Phoenix", "Puck", "Pudge", "Pugna",
+                "Queen of Pain",
+                "Razor", "Riki", "Rubick",
+                "Sand King", "Shadow Demon", "Shadow Fiend", "Shadow Shaman", "Silencer", "Skywrath Mage", "Slardar", "Slark", "Sniper", "Spectre", "Spirit Breaker", "Storm Spirit", "Sven",
+                "Techies", "Templar Assassin", "Terrorblade", "Tidehunter", "Timbersaw", "Tinker", "Tiny", "Treant Protector", "Troll Warlord", "Tusk",
+                "Underlord", "Undying", "Ursa",
+                "Vengeful Spirit", "Venomancer", "Viper", "Visage",
+                "Warlock", "Weaver", "Windranger", "Winter Wyvern", "Witch Doctor", "Wraith King",
+                "Zeus",
+            ];
 
-         function new_random_hero()
-         {
-             document.getElementById("output").innerHTML = random_hero();
-         }
-        </script>
-    </body>
+            return heroes[Math.floor(1000 * Math.random()) % heroes.length];
+        }
+
+        function new_random_hero() {
+            document.getElementById("output").innerHTML = random_hero();
+        }
+    </script>
+</body>
+
 </html>
