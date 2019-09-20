@@ -15,13 +15,19 @@
     }
 </style>
 
-<html onclick="new_random_hero()">
+<html onclick="do_it()">
 
 <body>
     <p id="output"> Click to random! </p>
     <script>
+
+        function do_it() {
+            // document.getElementById("output").innerHTML = random_hero();
+            document.getElementById("output").innerHTML = n_random_heroes(5);
+        }
+
         function random_hero() {
-            var heroes = [
+            const heroes = [
                 "Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage", "Arc Warden", "Axe",
                 "Bane", "Batrider", "Beastmaster", "Bloodseeker", "Bounty Hunter", "Brewmaster", "Bristleback", "Broodmother",
                 "Centaur Warrunner", "Chaos Knight", "Chen", "Clinkz", "Clockwerk", "Crystal Maiden",
@@ -51,8 +57,22 @@
             return heroes[Math.floor(1000 * Math.random()) % heroes.length];
         }
 
-        function new_random_hero() {
-            document.getElementById("output").innerHTML = random_hero();
+        function n_random_heroes(n) {
+            var arr = [];
+            for (i = 0; i < n; ++i) {
+                var hero = random_hero();
+                do {
+                    hero = random_hero();
+                } while (hero in arr);
+                arr.push(hero);
+            }
+
+            var ret = "";
+            arr.forEach((hero) => {
+                ret += hero + "<br/>"
+            });
+
+            return ret;
         }
     </script>
 </body>
