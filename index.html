@@ -63,7 +63,7 @@
                 var hero = random_hero();
                 do {
                     hero = random_hero();
-                } while (hero in arr);
+                } while (arr.find((h) => { return h == hero; }));
                 arr.push(hero);
             }
 
