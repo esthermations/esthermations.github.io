@@ -18,16 +18,55 @@
 <html onclick="do_it()">
 
 <body>
-    <p id="output"> Click to random! </p>
+
+
+    <p id="output"></p>
+    <hr>
+    <p id="timer"></p>
+
+
     <script>
 
+        setInterval(display_timer, 10);
+
+        const timeout = 10000; // Milliseconds
+
+        var last_run = 0;
+        var next_run = 0;
+
         function do_it() {
-            // document.getElementById("output").innerHTML = random_hero();
-            document.getElementById("output").innerHTML = n_random_heroes(5);
+            const time_since_last_run = (Date.now() - last_run);
+            if (time_since_last_run > timeout) {
+
+                document.getElementById("output").innerHTML =
+                    // random_hero();
+                    n_random_heroes(5);
+
+                last_run = Date.now();
+                next_run = last_run + timeout;
+            }
+
+            display_timer();
+        }
+
+        function display_timer() {
+            const time_since_last_run = (Date.now() - last_run);
+            const seconds_remaining = 
+                ((time_since_last_run <= timeout) 
+                 ? ((timeout - time_since_last_run) / 1000) 
+                 // Negative time isn't really helpful, just say 0
+                 : 0);
+
+            document.getElementById("timer").innerText =
+                ((seconds_remaining == 0)
+                 ? "Click to random!"
+                 : "Wait " + Number(seconds_remaining).toFixed(3)
+                           + " seconds to random again!");
         }
 
         function random_hero() {
             const heroes = [
+                // Alphebetised!
                 "Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage", "Arc Warden", "Axe",
                 "Bane", "Batrider", "Beastmaster", "Bloodseeker", "Bounty Hunter", "Brewmaster", "Bristleback", "Broodmother",
                 "Centaur Warrunner", "Chaos Knight", "Chen", "Clinkz", "Clockwerk", "Crystal Maiden",
@@ -51,6 +90,7 @@
                 "Underlord", "Undying", "Ursa",
                 "Vengeful Spirit", "Venomancer", "Viper", "Visage",
                 "Warlock", "Weaver", "Windranger", "Winter Wyvern", "Witch Doctor", "Wraith King",
+                // X
                 "Zeus",
             ];
 
@@ -58,17 +98,22 @@
         }
 
         function n_random_heroes(n) {
-            var arr = [];
+            var randomed_heroes = [];
+
             for (i = 0; i < n; ++i) {
-                var hero = random_hero();
+                var hero;
+
+                // Skip heroes we've already randomed, so we don't list the same
+                // hero twice
                 do {
                     hero = random_hero();
-                } while (arr.find((h) => { return h == hero; }));
-                arr.push(hero);
+                } while (randomed_heroes.find((h) => { return h == hero; }));
+
+                randomed_heroes.push(hero);
             }
 
             var ret = "";
-            arr.forEach((hero) => {
+            randomed_heroes.forEach((hero) => {
                 ret += hero + "<br/>"
             });
 
