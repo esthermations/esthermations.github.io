@@ -16,7 +16,7 @@
     }
 </style>
 
-<html onclick="click()">
+<html onclick="click_to_random()">
 
 <body>
 
@@ -30,14 +30,10 @@
 
         setInterval(tick, 10);
 
-        const STATE_0 = 0;
-        const STATE_1 = 1;
-        const STATE_2 = 2;
-
         const num_heroes = 5; 
         // How many heroes should we random at a time?
 
-        const timeout_ms = 10000; 
+        const timeout_ms = 10_000; 
         // How long (in ms) should we make the user wait before letting them
         // random again?
 
@@ -51,54 +47,45 @@
         // Should we allow the user to random right now?
 
         var clicked = false;
-        // Did the user click to random since the last tick?
-
-        var displayed_heroes_updated = false;
-        // Do we have a new set of heroes we need to display?
+        // Did the user click since last run?
 
         var output_element = document.getElementById("output");
         var timer_element = document.getElementById("timer");
 
-        function click()
+        function click_to_random()
         {
-            clicked = true;
+            if (can_random)
+            {
+                clicked = true;
+            }
         }
 
         function tick() 
         {
             const now = Date.now();
 
-            can_random = (now > next_run);
+            can_random = (now >= next_run);
 
             // Display the timer. Happens every tick.
+            if (now > next_run) 
             {
-                if (now > next_run) 
-                {
-                    timer_element.innerText = "Click to random!";
-                }
-                else
-                {
-                    const seconds_remaining = ((next_run - now) / 1000);
-                    const timer_string = Number(seconds_remaining).toFixed(3);
-                    timer_element.innerText = 
-                        "Walt " + timer_string + " seconds to random again!";
-                }
+                timer_element.innerText = "Click to random!";
+            }
+            else
+            {
+                const seconds_remaining = ((next_run - now) / 1000);
+                const timer_string = Number(seconds_remaining).toFixed(3);
+                timer_element.innerText = 
+                    "Wait " + timer_string + " seconds to random again!";
             }
 
             // Update hero list, if needed.
-            if (should_random || displayed_heroes.length == 0)
+            if (can_random && (clicked || displayed_heroes.length == 0))
             {
-                should_random = false;
+                clicked = false;
                 displayed_heroes = n_random_heroes(5);
-                displayed_heroes_updated = true;
-            }
 
-            // Display randomed heroes
-            if (displayed_heroes_updated) 
-            {
-                displayed_heroes_updated = false;
-                last_run = now;
-                next_run = now + timeout_ms;
+                // Display the updated list
 
                 var display_html = "";
 
@@ -107,6 +94,9 @@
                 });
 
                 output_element.innerHTML = display_html;
+
+                last_run = now;
+                next_run = now + timeout_ms;
             }
 
         } // end tick()
