@@ -16,7 +16,7 @@
     }
 </style>
 
-<html onclick="do_it()">
+<html onclick="click()">
 
 <body>
 
@@ -28,98 +28,140 @@
 
     <script>
 
-        setInterval(display_timer, 10);
+        setInterval(tick, 10);
 
-        const timeout = 10000; // Milliseconds
+        const STATE_0 = 0;
+        const STATE_1 = 1;
+        const STATE_2 = 2;
 
-        var last_run = 0;
-        var next_run = 0;
+        const num_heroes = 5; 
+        // How many heroes should we random at a time?
 
-        function do_it() {
-            const time_since_last_run = (Date.now() - last_run);
-            if (time_since_last_run > timeout) {
+        const timeout_ms = 10000; 
+        // How long (in ms) should we make the user wait before letting them
+        // random again?
 
-                document.getElementById("output").innerHTML =
-                    // random_hero();
-                    n_random_heroes(5);
+        var last_run = 0; // Date.now() at the time of the last random click
+        var next_run = 0; // == last_run + timeout_ms.
 
-                last_run = Date.now();
-                next_run = last_run + timeout;
+        var displayed_heroes = [];
+        // The heroes we last randomed. These are displayed on the page.
+
+        var can_random = false;
+        // Should we allow the user to random right now?
+
+        var clicked = false;
+        // Did the user click to random since the last tick?
+
+        var displayed_heroes_updated = false;
+        // Do we have a new set of heroes we need to display?
+
+        var output_element = document.getElementById("output");
+        var timer_element = document.getElementById("timer");
+
+        function click()
+        {
+            clicked = true;
+        }
+
+        function tick() 
+        {
+            const now = Date.now();
+
+            can_random = (now > next_run);
+
+            // Display the timer. Happens every tick.
+            {
+                if (now > next_run) 
+                {
+                    timer_element.innerText = "Click to random!";
+                }
+                else
+                {
+                    const seconds_remaining = ((next_run - now) / 1000);
+                    const timer_string = Number(seconds_remaining).toFixed(3);
+                    timer_element.innerText = 
+                        "Walt " + timer_string + " seconds to random again!";
+                }
             }
 
-            display_timer();
-        }
+            // Update hero list, if needed.
+            if (should_random || displayed_heroes.length == 0)
+            {
+                should_random = false;
+                displayed_heroes = n_random_heroes(5);
+                displayed_heroes_updated = true;
+            }
 
-        function display_timer() {
-            const time_since_last_run = (Date.now() - last_run);
-            const seconds_remaining = 
-                ((time_since_last_run <= timeout) 
-                 ? ((timeout - time_since_last_run) / 1000) 
-                 // Negative time isn't really helpful, just say 0
-                 : 0);
+            // Display randomed heroes
+            if (displayed_heroes_updated) 
+            {
+                displayed_heroes_updated = false;
+                last_run = now;
+                next_run = now + timeout_ms;
 
-            document.getElementById("timer").innerText =
-                ((seconds_remaining == 0)
-                 ? "Click to random!"
-                 : "Wait " + Number(seconds_remaining).toFixed(3)
-                           + " seconds to random again!");
-        }
+                var display_html = "";
+
+                displayed_heroes.forEach((hero) => {
+                    display_html += hero + "<br/>"
+                });
+
+                output_element.innerHTML = display_html;
+            }
+
+        } // end tick()
 
         function random_hero() {
-            const heroes = [
-                // Alphebetised!
-                "Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage", "Arc Warden", "Axe",
-                "Bane", "Batrider", "Beastmaster", "Bloodseeker", "Bounty Hunter", "Brewmaster", "Bristleback", "Broodmother",
-                "Centaur Warrunner", "Chaos Knight", "Chen", "Clinkz", "Clockwerk", "Crystal Maiden",
-                "Dark Seer", "Dark Willow", "Dazzle", "Death Prophet", "Disruptor", "Doom", "Dragon Knight", "Drow Ranger",
-                "Earth Spirit", "Earthshaker", "Elder Titan", "Ember Spirit", "Enchantress", "Enigma",
-                "Faceless Void",
-                "Grimstroke", "Gyrocopter",
-                "Huskar",
-                "Invoker", "Io",
-                "Jakiro", "Juggernaut",
-                "Keeper of the Light", "Kunkka",
-                "Legion Commander", "Leshrac", "Lich", "Lifestealer", "Lina", "Lion", "Lone Druid", "Luna", "Lycan",
-                "Magnus", "Mars", "Medusa", "Meepo", "Mirana", "Monkey King", "Morphling",
-                "Naga Siren", "Nature's Prophet", "Necrophos", "Night Stalker", "Nyx Assassin",
-                "Ogre Magi", "Omniknight", "Oracle", "Outworld Devourer",
-                "Pangolier", "Phantom Assassin", "Phantom Lancer", "Phoenix", "Puck", "Pudge", "Pugna",
-                "Queen of Pain",
-                "Razor", "Riki", "Rubick",
-                "Sand King", "Shadow Demon", "Shadow Fiend", "Shadow Shaman", "Silencer", "Skywrath Mage", "Slardar", "Slark", "Sniper", "Spectre", "Spirit Breaker", "Storm Spirit", "Sven",
-                "Techies", "Templar Assassin", "Terrorblade", "Tidehunter", "Timbersaw", "Tinker", "Tiny", "Treant Protector", "Troll Warlord", "Tusk",
-                "Underlord", "Undying", "Ursa",
-                "Vengeful Spirit", "Venomancer", "Viper", "Visage",
-                "Warlock", "Weaver", "Windranger", "Winter Wyvern", "Witch Doctor", "Wraith King",
-                // X
-                "Zeus",
-            ];
-
             return heroes[Math.floor(1000 * Math.random()) % heroes.length];
         }
 
         function n_random_heroes(n) {
-            var randomed_heroes = [];
+            var ret = [];
 
             for (i = 0; i < n; ++i) {
                 var hero;
 
-                // Skip heroes we've already randomed, so we don't list the same
-                // hero twice
                 do {
                     hero = random_hero();
-                } while (randomed_heroes.find((h) => { return h == hero; }));
+                } while (ret.find((h) => { return h == hero; }));
 
-                randomed_heroes.push(hero);
+                ret.push(hero);
             }
-
-            var ret = "";
-            randomed_heroes.forEach((hero) => {
-                ret += hero + "<br/>"
-            });
 
             return ret;
         }
+
+        const heroes = [
+            // Alphebetised!
+            "Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage", "Arc Warden", "Axe",
+            "Bane", "Batrider", "Beastmaster", "Bloodseeker", "Bounty Hunter", "Brewmaster", "Bristleback", "Broodmother",
+            "Centaur Warrunner", "Chaos Knight", "Chen", "Clinkz", "Clockwerk", "Crystal Maiden",
+            "Dark Seer", "Dark Willow", "Dazzle", "Death Prophet", "Disruptor", "Doom", "Dragon Knight", "Drow Ranger",
+            "Earth Spirit", "Earthshaker", "Elder Titan", "Ember Spirit", "Enchantress", "Enigma",
+            "Faceless Void",
+            "Grimstroke", "Gyrocopter",
+            "Huskar",
+            "Invoker", "Io",
+            "Jakiro", "Juggernaut",
+            "Keeper of the Light", "Kunkka",
+            "Legion Commander", "Leshrac", "Lich", "Lifestealer", "Lina", "Lion", "Lone Druid", "Luna", "Lycan",
+            "Magnus", "Mars", "Medusa", "Meepo", "Mirana", "Monkey King", "Morphling",
+            "Naga Siren", "Nature's Prophet", "Necrophos", "Night Stalker", "Nyx Assassin",
+            "Ogre Magi", "Omniknight", "Oracle", "Outworld Devourer",
+            "Pangolier", "Phantom Assassin", "Phantom Lancer", "Phoenix", "Puck", "Pudge", "Pugna",
+            "Queen of Pain",
+            "Razor", "Riki", "Rubick",
+            "Sand King", "Shadow Demon", "Shadow Fiend", "Shadow Shaman", "Silencer", "Skywrath Mage", "Slardar", "Slark", "Snapfire", "Sniper", "Spectre", "Spirit Breaker", "Storm Spirit", "Sven",
+            "Techies", "Templar Assassin", "Terrorblade", "Tidehunter", "Timbersaw", "Tinker", "Tiny", "Treant Protector", "Troll Warlord", "Tusk",
+            "Underlord", "Undying", "Ursa",
+            "Vengeful Spirit", "Venomancer", "Viper", "Visage", "Void Spirit",
+            "Warlock", "Weaver", "Windranger", "Winter Wyvern", "Witch Doctor", "Wraith King",
+            // X
+            "Zeus",
+        ];
+
+
+
     </script>
 </body>
 
