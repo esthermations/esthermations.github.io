@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<style>
+   html {
+      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+      text-align: center;
+   }
+</style>
+
+<html>
+
+<body>
+
+
+   <p>This doesn't work yet! Hooray!</p>
+
+   <input id="input" type="text">
+
+   ->
+
+   <select id="font">
+
+      <optgroup label="Serif">
+         <option value="Serif Normal">Normal</option>
+         <option value="Serif Bold">Bold</option>
+         <option value="Serif Italic">Italic</option>
+         <option value="Serif Bold Italic">Bold Italic</option>
+      </optgroup>
+
+      <optgroup label="Sans Serif">
+         <option value="Sans Serif Normal">Normal</option>
+         <option>Bold</option>
+         <option>Italic</option>
+         <option>Bold Italic</option>
+      </optgroup>
+
+      <optgroup label="Calligraphic">
+         <option>Normal</option>
+         <option>Bold</option>
+      </optgroup>
+
+      <optgroup label="Fraktur">
+         <option>Normal</option>
+         <option>Bold</option>
+      </optgroup>
+
+      <optgroup label="Monospace">
+         <option>Normal</option>
+      </optgroup>
+
+      <optgroup label="Double-struck">
+         <option>Bold</option>
+      </optgroup>
+
+   </select id="selection">
+
+   ->
+
+   <input id="output" type="text" readonly=true>
+
+   <button id="convert-button" onclick="Convert();">Convert!</button>
+
+   <script>
+
+      function Letter_To_Index(Letter) {
+         return (Letter - '\0');
+      }
+
+      // Arrays where I'm laying these symbols out as they are in ASCII -- capitals
+      // first, then lowercase. Unfortunately they aren't already like that in
+      // Unicode. Or, they mostly are, but there are enough exceptions that doing
+      // this is the simplest thing.
+      const Map = {
+         "Serif": {
+            "Normal": ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',],
+            "Bold": ['𝐀', '𝐁', '𝐂', '𝐃', '𝐄', '𝐅', '𝐆', '𝐇', '𝐈', '𝐉', '𝐊', '𝐋', '𝐌', '𝐍', '𝐎', '𝐏', '𝐐', '𝐑', '𝐒', '𝐓', '𝐔', '𝐕', '𝐖', '𝐗', '𝐘', '𝐙',],
+            "Italic": ['𝐴', '𝐵', '𝐶', '𝐷', '𝐸', '𝐹', '𝐺', '𝐻', '𝐼', '𝐽', '𝐾', '𝐿', '𝑀', '𝑁', '𝑂', '𝑃', '𝑄', '𝑅', '𝑆', '𝑇', '𝑈', '𝑉', '𝑊', '𝑋', '𝑌', '𝑍',],
+            "Bold Italic": ['𝑨', '𝑩', '𝑪', '𝑫', '𝑬', '𝑭', '𝑮', '𝑯', '𝑰', '𝑱', '𝑲', '𝑳', '𝑴', '𝑵', '𝑶', '𝑷', '𝑸', '𝑹', '𝑺', '𝑻', '𝑼', '𝑽', '𝑾', '𝑿', '𝒀', '𝒁',],
+         },
+
+         "Sans Serif": {
+            "Normal": ['𝖠', '𝖡', '𝖢', '𝖣', '𝖤', '𝖥', '𝖦', '𝖧', '𝖨', '𝖩', '𝖪', '𝖫', '𝖬', '𝖭', '𝖮', '𝖯', '𝖰', '𝖱', '𝖲', '𝖳', '𝖴', '𝖵', '𝖶', '𝖷', '𝖸', '𝖹',],
+            "Bold": ['𝗔', '𝗕', '𝗖', '𝗗', '𝗘', '𝗙', '𝗚', '𝗛', '𝗜', '𝗝', '𝗞', '𝗟', '𝗠', '𝗡', '𝗢', '𝗣', '𝗤', '𝗥', '𝗦', '𝗧', '𝗨', '𝗩', '𝗪', '𝗫', '𝗬', '𝗭',],
+            "Italic": ['𝘈', '𝘉', '𝘊', '𝘋', '𝘌', '𝘍', '𝘎', '𝘏', '𝘐', '𝘑', '𝘒', '𝘓', '𝘔', '𝘕', '𝘖', '𝘗', '𝘘', '𝘙', '𝘚', '𝘛', '𝘜', '𝘝', '𝘞', '𝘟', '𝘠', '𝘡',],
+            "Bold Italic": ['𝘼', '𝘽', '𝘾', '𝘿', '𝙀', '𝙁', '𝙂', '𝙃', '𝙄', '𝙅', '𝙆', '𝙇', '𝙈', '𝙉', '𝙊', '𝙋', '𝙌', '𝙍', '𝙎', '𝙏', '𝙐', '𝙑', '𝙒', '𝙓', '𝙔', '𝙕',],
+         },
+
+         "Calligraphic": {
+            "Normal": ['𝒜', 'ℬ', '𝒞', '𝒟', 'ℰ', 'ℱ', '𝒢', 'ℋ', 'ℐ', '𝒥', '𝒦', 'ℒ', 'ℳ', '𝒩', '𝒪', '𝒫', '𝒬', 'ℛ', '𝒮', '𝒯', '𝒰', '𝒱', '𝒲', '𝒳', '𝒴', '𝒵',],
+         }
+
+         // TODO ahhh I'll do the rest later.
+
+      };
+
+      var Input_Element = document.getElementById("input");
+      var Output_Element = document.getElementById("output");
+      var Font_Selection_Element = document.getElementById("font")
+
+      function Convert() {
+
+         Output_Element.value = Input_Element.value;
+      }
+
+   </script>
+
+</body>
+
+</html>

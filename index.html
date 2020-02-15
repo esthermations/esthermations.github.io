@@ -1,158 +1,42 @@
 <!DOCTYPE html>
 
-<style>
-    body {
-        background-color: #1f2f22;
-    }
+<html>
 
-    p {
-        color: white;
-        -webkit-user-select: none;
-        -o-user-select: none;
-        -moz-user-select: none;
-        font-family: monospace;
-        font-size: 60pt;
-        text-align: center;
-    }
+<style>
+   html {
+      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+      text-align: left;
+   }
+
+   ul {
+      text-align: left;
+      list-style-position: outside;
+      list-style-type: '-  ';
+   }
 </style>
 
-<html onclick="click_to_random()">
 
 <body>
 
+   <h1>Esther O'Keefe</h1>
 
-    <p id="output"></p>
-    <hr>
-    <p id="timer"></p>
+   <p>Hello, I'm Esther. Or <i>Hettie</i>! 👋</p>
 
+   <p>
+      I have a couple of little thingamajigs hosted here:
+      <ul>
+         <li>
+            <a href="./dota.html">A Dota 2 random hero selector</a>
+         </li>
+         <li>
+            <!-- TODO: "like this" -> something actually fancy, hahah. -->
+            <a href="./font.html">A tool for making fancy text like this</a>
+         </li>
 
-    <script>
-
-        setInterval(tick, 10);
-
-        const num_heroes = 5; 
-        // How many heroes should we random at a time?
-
-        const timeout_ms = 10_000; 
-        // How long (in ms) should we make the user wait before letting them
-        // random again?
-
-        var last_run = 0; // Date.now() at the time of the last random click
-        var next_run = 0; // == last_run + timeout_ms.
-
-        var displayed_heroes = [];
-        // The heroes we last randomed. These are displayed on the page.
-
-        var can_random = false;
-        // Should we allow the user to random right now?
-
-        var clicked = false;
-        // Did the user click since last run?
-
-        var output_element = document.getElementById("output");
-        var timer_element = document.getElementById("timer");
-
-        function click_to_random()
-        {
-            if (can_random)
-            {
-                clicked = true;
-            }
-        }
-
-        function tick() 
-        {
-            const now = Date.now();
-
-            can_random = (now >= next_run);
-
-            // Display the timer. Happens every tick.
-            if (now > next_run) 
-            {
-                timer_element.innerText = "Click to random!";
-            }
-            else
-            {
-                const seconds_remaining = ((next_run - now) / 1000);
-                const timer_string = Number(seconds_remaining).toFixed(3);
-                timer_element.innerText = 
-                    "Wait " + timer_string + " seconds to random again!";
-            }
-
-            // Update hero list, if needed.
-            if (can_random && (clicked || displayed_heroes.length == 0))
-            {
-                clicked = false;
-                displayed_heroes = n_random_heroes(5);
-
-                // Display the updated list
-
-                var display_html = "";
-
-                displayed_heroes.forEach((hero) => {
-                    display_html += hero + "<br/>"
-                });
-
-                output_element.innerHTML = display_html;
-
-                last_run = now;
-                next_run = now + timeout_ms;
-            }
-
-        } // end tick()
-
-        function random_hero() {
-            return heroes[Math.floor(1000 * Math.random()) % heroes.length];
-        }
-
-        function n_random_heroes(n) {
-            var ret = [];
-
-            for (i = 0; i < n; ++i) {
-                var hero;
-
-                do {
-                    hero = random_hero();
-                } while (ret.find((h) => { return h == hero; }));
-
-                ret.push(hero);
-            }
-
-            return ret;
-        }
-
-        const heroes = [
-            // Alphebetised!
-            "Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage", "Arc Warden", "Axe",
-            "Bane", "Batrider", "Beastmaster", "Bloodseeker", "Bounty Hunter", "Brewmaster", "Bristleback", "Broodmother",
-            "Centaur Warrunner", "Chaos Knight", "Chen", "Clinkz", "Clockwerk", "Crystal Maiden",
-            "Dark Seer", "Dark Willow", "Dazzle", "Death Prophet", "Disruptor", "Doom", "Dragon Knight", "Drow Ranger",
-            "Earth Spirit", "Earthshaker", "Elder Titan", "Ember Spirit", "Enchantress", "Enigma",
-            "Faceless Void",
-            "Grimstroke", "Gyrocopter",
-            "Huskar",
-            "Invoker", "Io",
-            "Jakiro", "Juggernaut",
-            "Keeper of the Light", "Kunkka",
-            "Legion Commander", "Leshrac", "Lich", "Lifestealer", "Lina", "Lion", "Lone Druid", "Luna", "Lycan",
-            "Magnus", "Mars", "Medusa", "Meepo", "Mirana", "Monkey King", "Morphling",
-            "Naga Siren", "Nature's Prophet", "Necrophos", "Night Stalker", "Nyx Assassin",
-            "Ogre Magi", "Omniknight", "Oracle", "Outworld Devourer",
-            "Pangolier", "Phantom Assassin", "Phantom Lancer", "Phoenix", "Puck", "Pudge", "Pugna",
-            "Queen of Pain",
-            "Razor", "Riki", "Rubick",
-            "Sand King", "Shadow Demon", "Shadow Fiend", "Shadow Shaman", "Silencer", "Skywrath Mage", "Slardar", "Slark", "Snapfire", "Sniper", "Spectre", "Spirit Breaker", "Storm Spirit", "Sven",
-            "Techies", "Templar Assassin", "Terrorblade", "Tidehunter", "Timbersaw", "Tinker", "Tiny", "Treant Protector", "Troll Warlord", "Tusk",
-            "Underlord", "Undying", "Ursa",
-            "Vengeful Spirit", "Venomancer", "Viper", "Visage", "Void Spirit",
-            "Warlock", "Weaver", "Windranger", "Winter Wyvern", "Witch Doctor", "Wraith King",
-            // X
-            "Zeus",
-        ];
+      </ul>
+   </p>
 
 
-
-    </script>
 </body>
 
 </html>
