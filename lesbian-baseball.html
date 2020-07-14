@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<title>Lesbian Baseball</title>
+<body style="text-align: center; background-color: cornsilk;">
+
+    <h1>Lesbian Flag Generator</h1>
+    <input type="text" id="input" oninput="validate_input_and_update()">
+    <br>
+    <button type="button" onclick="save_flag()"> Download your flag! </button>
+
+    <p id="info">Type a word!</p>
+
+    <canvas id="canvas"></canvas> 
+
+</body>
+
+<script>
+
+var canvas = document.getElementById("canvas");
+
+// This is fixed, and determines the size of the flag, since the aspect ratio
+// will always be 2:3.
+const FLAG_WIDTH = 1200; 
+
+canvas.width = FLAG_WIDTH; 
+
+const DEFAULT_FLAG_ASPECT_RATIO = (2.0 / 3.0);
+const DEFAULT_NUM_STRIPES = 6;
+
+const STRIPE_HEIGHT = 
+    ((canvas.width * DEFAULT_FLAG_ASPECT_RATIO) / DEFAULT_NUM_STRIPES);
+// Just making my calculation explicit there...
+
+// Reference lesbian flag: 
+// https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Lesbian_pride_flag_2018.svg/2000px-Lesbian_pride_flag_2018.svg.png
+
+// It has six stripes, in six colours. These are:
+const COLOURS = {
+    'l' : "rgba(214, 41,  0  , 100)",
+    'e' : "rgba(239, 119, 34 , 100)",
+    's' : "rgba(255, 155, 85 , 100)",
+    'b' : "rgba(255, 255, 255, 100)",
+    'i' : "rgba(210, 98,  165, 100)",
+    'a' : "rgba(182, 85,  145, 100)",
+    'n' : "rgba(165, 0,   98 , 100)",
+};
+
+var context = canvas.getContext("2d");
+
+// Get the text the user has input
+function get_input () {
+    return document.getElementById("input").value;
+}
+
+// Check the input word is actually composed of the letters in 'lesbian', and if
+// they are, update the rendered flag to represent the word.
+function is_valid(str) {
+    for (let i = 0; i < str.length; i++) {
+        if (!"lesbian".includes(str[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function validate_input_and_update() {
+    const input = get_input();
+
+    console.log("update() called. Input = " + input);
+
+    if (!is_valid(input)) {
+        document.getElementById("info").innerText 
+            = "Your word has letters other than the ones in 'lesbian'!";
+
+        return;
+    }
+
+    // Otherwise it's valid, generate a flag
+
+    document.getElementById("info").innerText = "Generating...";
+
+    // Clear the previous flag...
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.beginPath();
+
+    // There will be as many stripes as letters. We need to keep track of how
+    // many stripes we've drawn to determine where the next stripe should go.
+    var stripe_number = 0;
+
+    canvas.height = (STRIPE_HEIGHT * input.length);
+
+    for (var i = 0; i < input.length; ++i) {
+        const letter = input[i];
+        const offset_from_top = (stripe_number * STRIPE_HEIGHT);
+
+        // +1 because stripe_number=0 is the first stripe...
+
+        // Set the colour corresponding to that letter
+        context.fillStyle = COLOURS[letter];
+
+        // Draw the stripe
+        context.fillRect(0, offset_from_top, FLAG_WIDTH, STRIPE_HEIGHT);
+        context.fill();
+        context.stroke();
+
+        // Move on to the next stripe...
+        stripe_number += 1;
+    }
+}
+
+// This is straight from StackOverflow so it's probably bad, sue me
+function save_flag() {
+    const word = get_input();
+    var url = document.createElement('a');
+    url.download = word + '.png';
+    url.href = canvas.toDataURL();
+    url.click();
+}
+
+</script>
