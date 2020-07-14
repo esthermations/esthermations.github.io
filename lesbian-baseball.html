@@ -6,7 +6,7 @@
     <h1>Lesbian Flag Generator</h1>
     <input id="input" type="text" oninput="validate_input_and_update()">
     <br>
-    <button id="button" type="button" onclick="save_flag()"> 
+    <button id="button" type="button" onclick="save_flag()" disabled> 
         Download your flag!
     </button>
 
@@ -57,11 +57,16 @@ function get_input () {
 // Check the input word is actually composed of the letters in 'lesbian', and if
 // they are, update the rendered flag to represent the word.
 function is_valid(str) {
+    if (str.length == 0) {
+        return false;
+    }
+
     for (let i = 0; i < str.length; i++) {
         if (!"lesbian".includes(str[i])) {
             return false;
         }
     }
+
     return true;
 }
 
