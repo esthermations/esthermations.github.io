@@ -73,8 +73,6 @@ function is_valid(str) {
 function validate_input_and_update() {
     const input = get_input();
 
-    console.log("update() called. Input = " + input);
-
     if (!is_valid(input)) {
         document.getElementById("info").innerText 
             = "Your shit is invalid! Does your word have letters other than the ones in 'lesbian'?";
@@ -89,7 +87,7 @@ function validate_input_and_update() {
 
     // Otherwise it's valid, generate a flag
 
-    document.getElementById("info").innerText = "Generating...";
+    document.getElementById("info").innerText = "Done!"; // I'm assuming >_>
 
     // Clear the previous flag...
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -104,7 +102,6 @@ function validate_input_and_update() {
     for (var i = 0; i < input.length; ++i) {
         const letter = input[i];
         const offset_from_top = (stripe_number * STRIPE_HEIGHT);
-
         // +1 because stripe_number=0 is the first stripe...
 
         // Set the colour corresponding to that letter
@@ -112,8 +109,6 @@ function validate_input_and_update() {
 
         // Draw the stripe
         context.fillRect(0, offset_from_top, FLAG_WIDTH, STRIPE_HEIGHT);
-        context.fill();
-        context.stroke();
 
         // Move on to the next stripe...
         stripe_number += 1;
