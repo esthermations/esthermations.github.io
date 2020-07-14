@@ -4,9 +4,11 @@
 <body style="text-align: center; background-color: cornsilk;">
 
     <h1>Lesbian Flag Generator</h1>
-    <input type="text" id="input" oninput="validate_input_and_update()">
+    <input id="input" type="text" oninput="validate_input_and_update()">
     <br>
-    <button type="button" onclick="save_flag()"> Download your flag! </button>
+    <button id="button" type="button" onclick="save_flag()"> 
+        Download your flag!
+    </button>
 
     <p id="info">Type a word!</p>
 
@@ -72,8 +74,13 @@ function validate_input_and_update() {
         document.getElementById("info").innerText 
             = "Your word has letters other than the ones in 'lesbian'!";
 
+        // Disable the download button
+        document.getElementById("button").disabled = true;
         return;
     }
+
+    // Enable the download button, since it's a valid flag
+    document.getElementById("button").disabled = false;
 
     // Otherwise it's valid, generate a flag
 
