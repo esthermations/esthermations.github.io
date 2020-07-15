@@ -1,11 +1,32 @@
 <!DOCTYPE html>
 
-<title>Lesbian Baseball</title>
-<body style="text-align: center; background-color: cornsilk;">
+<head>
+    <title>Lesbian Baseball</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: cornsilk;
+        } 
 
+        input { border: black solid 1px; }
+        input:invalid { background-color: pink; }
+        input:valid   { background-color: white; }
+    </style>
+</head>
+
+<body>
     <h1>Lesbian Flag Generator</h1>
-    <input id="input" type="text" oninput="validate_input_and_update()">
+
+    <input 
+        id          = "input" 
+        type        = "text" 
+        oninput     = "validate_input_and_update()" 
+        placeholder = "lesbian"
+        pattern     = "[lesbian]+"
+    >
+
     <br>
+
     <button id="button" type="button" onclick="save_flag()" disabled> 
         Download your flag!
     </button>
@@ -15,12 +36,16 @@
     </p>
 
     <canvas id="canvas"></canvas> 
-
 </body>
 
 <script>
 
+/*
+    Configure a canvas to draw the flag 
+*/
+
 var canvas = document.getElementById("canvas");
+var context = canvas.getContext("2d");
 
 // This is fixed, and determines the size of the flag, since the aspect ratio
 // will always be 2:3.
@@ -49,33 +74,42 @@ const COLOURS = {
     'n' : "rgba(165, 0,   98 , 100)",
 };
 
-var context = canvas.getContext("2d");
 
-// Get the text the user has input
-function get_input () {
+/*
+    Utility
+*/
+
+// Check whether the user's input is considered valid by the <input>'s pattern
+function input_is_valid() {
+    return document.getElementById("input").matches("input:valid");
+}
+
+// Download the rendered flag as a PNG file. This is straight from StackOverflow
+// so it's probably bad, sue me
+function save_flag() {
+    const word = get_input();
+    var url = document.createElement('a');
+    url.download = word + '.png';
+    url.href = canvas.toDataURL();
+    url.click();
+}
+
+// Get the user's input
+function get_input() {
     return document.getElementById("input").value;
 }
 
+/*
+    Render a flag!!
+*/
+
 // Check the input word is actually composed of the letters in 'lesbian', and if
 // they are, update the rendered flag to represent the word.
-function is_valid(str) {
-    if (str.length == 0) {
-        return false;
-    }
-
-    for (let i = 0; i < str.length; i++) {
-        if (!"lesbian".includes(str[i])) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 function validate_input_and_update() {
     const input = get_input();
 
-    if (!is_valid(input)) {
+    // Handle invalid input
+    if (!input_is_valid()) {
         document.getElementById("info").innerText 
             = "Your shit is invalid! Does your word have letters other than the ones in 'lesbian'?";
 
@@ -84,46 +118,34 @@ function validate_input_and_update() {
         return;
     }
 
-    // Enable the download button, since it's a valid flag
+    //
+    // Otherwise it's valid, so generate a flag
+    //
+
+    // Enable the download button
     document.getElementById("button").disabled = false;
 
-    // Otherwise it's valid, generate a flag
-
-    document.getElementById("info").innerText = "Done!"; // I'm assuming >_>
+    // Print something encouraging...
+    document.getElementById("info").innerText = "Done!"; 
 
     // Clear the previous flag...
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.beginPath();
 
-    // There will be as many stripes as letters. We need to keep track of how
-    // many stripes we've drawn to determine where the next stripe should go.
-    var stripe_number = 0;
-
+    // There are as many stripes as letters, so we can calculate the flag size.
     canvas.height = (STRIPE_HEIGHT * input.length);
 
+    // Render the stripes
     for (var i = 0; i < input.length; ++i) {
         const letter = input[i];
-        const offset_from_top = (stripe_number * STRIPE_HEIGHT);
-        // +1 because stripe_number=0 is the first stripe...
+        const offset_from_top = (i * STRIPE_HEIGHT);
 
         // Set the colour corresponding to that letter
         context.fillStyle = COLOURS[letter];
 
         // Draw the stripe
         context.fillRect(0, offset_from_top, FLAG_WIDTH, STRIPE_HEIGHT);
-
-        // Move on to the next stripe...
-        stripe_number += 1;
     }
-}
 
-// This is straight from StackOverflow so it's probably bad, sue me
-function save_flag() {
-    const word = get_input();
-    var url = document.createElement('a');
-    url.download = word + '.png';
-    url.href = canvas.toDataURL();
-    url.click();
 }
 
 </script>
