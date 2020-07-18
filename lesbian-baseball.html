@@ -9,36 +9,35 @@
         } 
 
         input { border: black solid 1px; }
-        input:invalid { background-color: pink; }
-        input:valid   { background-color: white; }
     </style>
 </head>
 
 <body>
     <h1>Lesbian Flag Generator</h1>
 
-    <input 
-        id          = "input" 
-        type        = "text" 
-        oninput     = "validate_input_and_update()" 
-        placeholder = "lesbian"
-        pattern     = "[lesbian]+"
-    >
+    <span><select id="flag_selector" onchange="update_current_flag()"></select></span>
+
+    <span><input id="input" type="text" oninput="validate_input_and_update()"></span>
+
+    <span>
+        <button id="button" type="button" onclick="save_flag()" disabled> 
+            Download your flag!
+        </button>
+    </span>
 
     <br>
 
-    <button id="button" type="button" onclick="save_flag()" disabled> 
-        Download your flag!
-    </button>
+    <span id="info_message"></span>
 
-    <p id="info">
-        Type a word! Try "lesbian" or "baseball"!
-    </p>
+    <br>
 
-    <canvas id="canvas"></canvas> 
+    <span>
+        <canvas id="canvas"></canvas> 
+    </span>
 </body>
 
 <script>
+
 
 /*
     Configure a canvas to draw the flag 
@@ -54,34 +53,101 @@ const FLAG_WIDTH = 1200;
 canvas.width = FLAG_WIDTH; 
 
 const DEFAULT_FLAG_ASPECT_RATIO = (2.0 / 3.0);
-const DEFAULT_NUM_STRIPES = 6;
 
-const STRIPE_HEIGHT = 
-    ((canvas.width * DEFAULT_FLAG_ASPECT_RATIO) / DEFAULT_NUM_STRIPES);
-// Just making my calculation explicit there...
+const FLAGS = [
+    {
+        name    : 'lesbian',
+        pattern : /[lesbian]+/,
+        colours : {
+            'l' : "rgba(214, 41,  0  , 100)",
+            'e' : "rgba(239, 119, 34 , 100)",
+            's' : "rgba(255, 155, 85 , 100)",
+            'b' : "rgba(255, 255, 255, 100)",
+            'i' : "rgba(210, 98,  165, 100)",
+            'a' : "rgba(182, 85,  145, 100)",
+            'n' : "rgba(165, 0,   98 , 100)",
+        }
+    },
 
-// Reference lesbian flag: 
-// https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Lesbian_pride_flag_2018.svg/2000px-Lesbian_pride_flag_2018.svg.png
+    {
+        name    : 'trans',
+        pattern : /[trans]+/,
+        colours : {
+            't' : "rgba( 91, 207, 251, 100)",
+            'r' : "rgba(246, 170, 185, 100)",
+            'a' : "rgba(255, 255, 255, 100)",
+            'n' : "rgba(246, 170, 185, 100)", // same as for r
+            's' : "rgba( 91, 207, 251, 100)", // same as for t
+        }
+    },
 
-// It has six stripes, in six colours. These are:
-const COLOURS = {
-    'l' : "rgba(214, 41,  0  , 100)",
-    'e' : "rgba(239, 119, 34 , 100)",
-    's' : "rgba(255, 155, 85 , 100)",
-    'b' : "rgba(255, 255, 255, 100)",
-    'i' : "rgba(210, 98,  165, 100)",
-    'a' : "rgba(182, 85,  145, 100)",
-    'n' : "rgba(165, 0,   98 , 100)",
-};
+    {
+        name    : 'enby',
+        pattern : /[enby]+/,
+        colours : {
+            "e" : "rgba(253, 245,  52, 100)",
+            "n" : "rgba(253, 253, 253, 100)",
+            "b" : "rgba(157,  92, 213, 100)",
+            "y" : "rgba( 44,  44,  44, 100)",
+        }
+    }
+]
 
+{
+    var selector = document.getElementById("flag_selector");
+    for (const flag of FLAGS) {
+        var option = document.createElement("option");
+        option.value = flag.name;
+        option.innerHTML = flag.name;
+        selector.appendChild(option);
+    }
+}
+
+var current_flag = FLAGS[0];
+
+function clear_canvas() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function clear_input() {
+    document.getElementById("input").value = "";
+}
+
+function update_current_flag() {
+    const selected_flag = document.getElementById("flag_selector").value;
+    for (var i = 0; i < FLAGS.length; ++i) {
+        if (FLAGS[i].name == selected_flag) {
+            current_flag = FLAGS[i];
+            clear_canvas();
+            return;
+        }
+    }
+}
+
+function default_num_stripes() {
+    return Object.keys(current_flag.colours).length;
+}
+
+function stripe_height() {
+    return (canvas.width * DEFAULT_FLAG_ASPECT_RATIO) / default_num_stripes();
+}
+
+function colour(letter) {
+    return current_flag.colours[letter];
+}
 
 /*
     Utility
 */
 
+const INPUT_STYLE_INVALID = "border: black solid 1px; background-color: pink;";
+const INPUT_STYLE_VALID   = "border: black solid 1px; background-color: white;";
+
 // Check whether the user's input is considered valid by the <input>'s pattern
 function input_is_valid() {
-    return document.getElementById("input").matches("input:valid");
+    const input = document.getElementById("input").value;
+    const regex = new RegExp(current_flag.pattern);
+    return regex.test(input);
 }
 
 // Download the rendered flag as a PNG file. This is straight from StackOverflow
@@ -99,6 +165,10 @@ function get_input() {
     return document.getElementById("input").value;
 }
 
+function tell_user(message) {
+    document.getElementById("info_message").innerText = message;
+}
+
 /*
     Render a flag!!
 */
@@ -110,11 +180,18 @@ function validate_input_and_update() {
 
     // Handle invalid input
     if (!input_is_valid()) {
-        document.getElementById("info").innerText 
-            = "Your shit is invalid! Does your word have letters other than the ones in 'lesbian'?";
+
+        console.log("Input is invalid: " + input + " doesn't match pattern " + current_flag.pattern);
+
+        // Set the invalid style
+        document.getElementById("input").style = INPUT_STYLE_INVALID;
 
         // Disable the download button
         document.getElementById("button").disabled = true;
+
+        // Print something discouraging...
+        tell_user("Your shit is invalid!");
+
         return;
     }
 
@@ -122,28 +199,35 @@ function validate_input_and_update() {
     // Otherwise it's valid, so generate a flag
     //
 
+    console.log("Input is valid!");
+
+    // Set the valid style
+    document.getElementById("input").style = INPUT_STYLE_VALID;
+
     // Enable the download button
     document.getElementById("button").disabled = false;
 
     // Print something encouraging...
-    document.getElementById("info").innerText = "Done!"; 
+    tell_user("Done!");
 
     // Clear the previous flag...
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    clear_canvas();
 
     // There are as many stripes as letters, so we can calculate the flag size.
-    canvas.height = (STRIPE_HEIGHT * input.length);
+    canvas.height = (stripe_height() * input.length);
 
     // Render the stripes
     for (var i = 0; i < input.length; ++i) {
         const letter = input[i];
-        const offset_from_top = (i * STRIPE_HEIGHT);
+        const offset_from_top = (i * stripe_height());
 
         // Set the colour corresponding to that letter
-        context.fillStyle = COLOURS[letter];
+        context.fillStyle = colour(letter);
 
         // Draw the stripe
-        context.fillRect(0, offset_from_top, FLAG_WIDTH, STRIPE_HEIGHT);
+        context.fillRect(0, offset_from_top, FLAG_WIDTH, stripe_height());
+
+        console.log("Rendering stripe in colour [" + colour(letter) + "] and height [" + stripe_height() + "]");
     }
 
 }
