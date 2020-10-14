@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Skellies</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: cornsilk;
+        } 
+
+        input { border: black solid 1px; }
+    </style>
+</head>
+
+<body>
+    <h1>Skelly Generator</h1>
+
+    <span>
+        To download your skelly, right-click and hit "save"!
+        <!--<button id="button" type="button" onclick="save_skelly()" disabled> 
+            Download your skelly!
+        </button>-->
+    </span>
+
+    <br>
+
+    <span>
+        <input id="input" type="text" oninput="validate_input_and_update()">
+    </span>
+
+
+    <br>
+
+    <span id="info_message"></span>
+
+    <br>
+
+    <span>
+        <canvas id="canvas"></canvas> 
+    </span>
+</body>
+
+<script>
+
+
+/*
+    Configure a canvas to draw the skel 
+*/
+
+var canvas = document.getElementById("canvas");
+var context = canvas.getContext("2d");
+
+function clear_canvas() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function clear_input() {
+    document.getElementById("input").value = "";
+}
+
+var SEGMENTS = {
+    'sk' : new Image(),
+    'el' : new Image(),
+    'e'  : new Image(),
+    'to' : new Image(),
+    'n'  : new Image(),
+};
+
+{
+    // Assign image sources to each segment.
+    Object.keys(SEGMENTS).forEach(function(Key) {
+        SEGMENTS[Key].src = './segments/' + Key + '.png';
+    });
+}
+
+/*
+    Utility
+*/
+
+const INPUT_STYLE_INVALID = "border: black solid 1px; background-color: pink;";
+const INPUT_STYLE_VALID   = "border: black solid 1px; background-color: white;";
+
+// Check whether the user's input is considered valid by the <input>'s pattern
+function input_is_valid() {
+    const input = document.getElementById("input").value;
+    const regex = new RegExp(/^(sk|el|e|to|n)+$/);
+    return regex.test(input);
+}
+
+function break_into_tokens(input_string) {
+    const regex = new RegExp(/(sk|el|e|to|n)/g);
+    return regex[Symbol.matchAll](input_string);
+}
+
+// Download the rendered skel as a PNG file. This is straight from StackOverflow
+// so it's probably bad, sue me. 
+// FIXME: This doesn't work because the canvas is "tainted", probably because
+// there is a spooky skeleton on it.
+function save_skelly() {
+    const word = get_input();
+    var url = document.createElement('a');
+    url.download = word + '.png';
+    url.href = canvas.toDataURL();
+    url.click();
+}
+
+// Get the user's input
+function get_input() {
+    return document.getElementById("input").value;
+}
+
+function tell_user(message) {
+    document.getElementById("info_message").innerText = message;
+}
+
+/*
+    Render a skelly!!
+*/
+
+function validate_input_and_update() {
+    const input = get_input();
+
+    // Handle invalid input
+    if (!input_is_valid()) {
+
+        console.log("Invalid input: " + input);
+
+        // Set the invalid style
+        document.getElementById("input").style = INPUT_STYLE_INVALID;
+
+        // Disable the download button
+        //document.getElementById("button").disabled = true;
+
+        // Print something discouraging...
+        tell_user("Your shit is invalid!");
+
+        return;
+    }
+
+    //
+    // Otherwise it's valid, so generate a 
+    //
+
+    console.log("Input is valid!");
+
+    // Set the valid style
+    document.getElementById("input").style = INPUT_STYLE_VALID;
+
+    // Enable the download button
+    //document.getElementById("button").disabled = false;
+
+    // Print something encouraging...
+    tell_user("Done!");
+
+    // Clear the previous image...
+    clear_canvas();
+
+    /*
+        The canvas height will be the sum of the height of all the segments
+        we have.
+    */
+
+    const split_input = Array.from(break_into_tokens(input));
+
+    {
+        canvas.height = 0;
+        for (const match of split_input) {
+            canvas.height += SEGMENTS[match[0]].height;
+        }
+        console.log("Canvas height is: " + canvas.height);
+
+        canvas.width = SEGMENTS['sk'].width;
+    }
+
+    var height_so_far = 0;
+
+    // Render the stripes
+    for (const match of split_input) {
+        const token = match[0];
+        const image = SEGMENTS[token];
+
+        console.log("height_so_far is: " + height_so_far);
+        
+        context.drawImage(image, 0, height_so_far);
+        height_so_far += image.height;
+
+        console.log("Drawing segment " + token + ".");
+    }
+
+}
+
+</script>
